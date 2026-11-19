@@ -12,13 +12,11 @@ public class VelocidadStrategy implements PuntuacionStrategy {
 
     @Override
     public Modalidad modalidad() {
-        // TODO 7a
-        throw new UnsupportedOperationException("TODO 7a");
+        return Modalidad.VELOCIDAD;
     }
 
     @Override
     public int calcular(EstadisticasPartida stats) {
-        // TODO 7b: ¿que pasa si la partida dura mas de 1000 segundos? El bono no debe ser negativo.
-        throw new UnsupportedOperationException("TODO 7b");
+        return Math.max(0, 1000 - stats.segundos()) + stats.kills() * 5;
     }
 }

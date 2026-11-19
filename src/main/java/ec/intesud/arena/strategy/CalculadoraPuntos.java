@@ -6,6 +6,7 @@ import ec.intesud.arena.exception.ReglaNegocioException;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,14 +20,13 @@ public class CalculadoraPuntos {
     private final Map<Modalidad, PuntuacionStrategy> estrategias = new EnumMap<>(Modalidad.class);
 
     public CalculadoraPuntos(List<PuntuacionStrategy> lista) {
-        // TODO 8a (DI + Strategy): llena el mapa "estrategias" usando la modalidad de cada
-        // estrategia como clave. Sin if/else: una sola iteracion.
+        lista.forEach(estrategia -> estrategias.put(estrategia.modalidad(), estrategia));
     }
 
     public int calcular(Modalidad modalidad, EstadisticasPartida stats) {
-        // TODO 8b: busca la estrategia de la modalidad y delega el calculo en ella.
-        // Si no existe, lanza ReglaNegocioException("No hay estrategia de puntuacion para ...").
-        // Pregunta para pensar: ¿que principio SOLID se cumple al NO usar un switch aqui?
-        throw new UnsupportedOperationException("TODO 8b");
+        PuntuacionStrategy estrategia = Optional.ofNullable(estrategias.get(modalidad))
+                .orElseThrow(() -> new ReglaNegocioException(
+                        "No hay estrategia de puntuacion para " + modalidad));
+        return estrategia.calcular(stats);
     }
 }

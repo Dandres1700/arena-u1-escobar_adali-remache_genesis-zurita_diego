@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
 public class TorneoFactory {
 
     public Torneo crear(String nombre, Modalidad modalidad) {
-        // TODO 9 (Factory): cada modalidad tiene su cupo: CLASICA=16, SUPERVIVENCIA=32, VELOCIDAD=8.
-        // Usa un "switch" con flechas (->) que devuelva el cupo y crea el Torneo.
-        // Pregunta: ¿que ventaja tiene que el switch cubra TODOS los valores del enum?
-        throw new UnsupportedOperationException("TODO 9: TorneoFactory.crear()");
+        int cupo = switch (modalidad) {
+            case CLASICA -> 16;
+            case SUPERVIVENCIA -> 32;
+            case VELOCIDAD -> 8;
+        };
+        return new Torneo(nombre, modalidad, cupo);
     }
 }

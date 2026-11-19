@@ -47,6 +47,19 @@ public class LegadoCsvAdapter implements ImportadorResultados {
      * IllegalArgumentException. ¿Existe una relacion entre ambas excepciones?
      */
     private ResultadoImportado convertirLinea(String linea, int numero) {
-        throw new UnsupportedOperationException("TODO 10: LegadoCsvAdapter.convertirLinea()");
+        String[] columnas = linea.split(";", -1);
+        if (columnas.length != 4 || columnas[0].trim().isEmpty()) {
+            throw new FormatoInvalidoException(
+                    "Linea " + numero + ": se esperaba nick;kills;muertes;segundos");
+        }
+        try {
+            String nick = columnas[0].trim();
+            int kills = Integer.parseInt(columnas[1].trim());
+            int muertes = Integer.parseInt(columnas[2].trim());
+            int segundos = Integer.parseInt(columnas[3].trim());
+            return new ResultadoImportado(nick, new EstadisticasPartida(kills, muertes, segundos));
+        } catch (IllegalArgumentException e) {
+            throw new FormatoInvalidoException("Linea " + numero + ": datos invalidos");
+        }
     }
 }
