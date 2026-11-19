@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class JugadorService {
 
-    private JugadorRepository jugadorRepository; // TODO 12: hazlo final cuando completes el constructor
+    private final JugadorRepository jugadorRepository;
 
-    // TODO 12 (inyeccion de dependencias): asigna el repositorio recibido. Luego vuelve el campo final.
-    // Pregunta: ¿por que la inyeccion por constructor es mejor que usar @Autowired en el campo?
+    // Inyeccion por constructor: Spring entrega el repositorio y el campo final no puede cambiar.
     public JugadorService(JugadorRepository jugadorRepository) {
+        this.jugadorRepository = jugadorRepository;
     }
 
     public JugadorResponse crear(JugadorRequest request) {
