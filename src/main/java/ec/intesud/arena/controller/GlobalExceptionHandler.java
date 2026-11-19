@@ -25,10 +25,17 @@ public class GlobalExceptionHandler {
         return responder(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    // TODO 11 (excepciones): agrega dos manejadores mas, siguiendo el ejemplo de arriba:
-    //   - ReglaNegocioException   -> HTTP 409 (CONFLICT)
-    //   - FormatoInvalidoException -> HTTP 400 (BAD_REQUEST)
-    // Piensa: ¿por que es mejor un solo lugar para esto y no try/catch en cada controller?
+    /** Se violo una regla del negocio (cupo lleno, jugador repetido, torneo finalizado...). */
+    @ExceptionHandler(ReglaNegocioException.class)
+    public ResponseEntity<ApiError> reglaNegocio(ReglaNegocioException e) {
+        return responder(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    /** Los datos llegaron con un formato incorrecto (por ejemplo, la importacion del legado). */
+    @ExceptionHandler(FormatoInvalidoException.class)
+    public ResponseEntity<ApiError> formatoInvalido(FormatoInvalidoException e) {
+        return responder(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
 
     /** Falla alguna validacion del DTO (@NotBlank, @Min...). Juntamos todos los mensajes. */
     @ExceptionHandler(MethodArgumentNotValidException.class)
