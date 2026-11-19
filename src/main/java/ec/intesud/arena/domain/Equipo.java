@@ -22,9 +22,8 @@ public class Equipo extends Participante {
 
     @Override
     public int getPuntos() {
-        // TODO 1 (herencia + composicion): los puntos de un equipo son la suma de los
-        // puntos de sus integrantes. Pista: recorre "integrantes" (for o stream).
-        throw new UnsupportedOperationException("TODO 1: Equipo.getPuntos()");
+        // Composicion: el equipo no guarda puntos propios, los obtiene de sus integrantes.
+        return integrantes.stream().mapToInt(JugadorPuntaje::getPuntos).sum();
     }
 
     @Override
