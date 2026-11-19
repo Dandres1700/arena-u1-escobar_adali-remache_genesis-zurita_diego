@@ -56,15 +56,20 @@ public class Torneo {
     }
 
     /**
-     * TODO 5 (excepciones + reglas de negocio): inscribe al jugador SOLO si se cumplen las 3 reglas.
-     * Si alguna falla, lanza ReglaNegocioException con un mensaje claro (el orden importa para el test):
-     *   1. el torneo no esta FINALIZADO
-     *   2. el jugador no esta ya inscrito  (ya existe un metodo que ayuda)
-     *   3. no se supero el cupo maximo
-     * Si todo esta bien, agrega el jugador al conjunto "jugadores".
+     * Inscribe al jugador solo si: el torneo no esta FINALIZADO, el jugador no esta ya
+     * inscrito y queda cupo. Si alguna regla falla lanza ReglaNegocioException.
      */
     public void inscribir(Jugador jugador) {
-        throw new UnsupportedOperationException("TODO 5: Torneo.inscribir()");
+        if (estado == EstadoTorneo.FINALIZADO) {
+            throw new ReglaNegocioException("El torneo '" + nombre + "' ya esta finalizado");
+        }
+        if (estaInscrito(jugador)) {
+            throw new ReglaNegocioException("El jugador '" + jugador.getNick() + "' ya esta inscrito");
+        }
+        if (jugadores.size() >= cupoMaximo) {
+            throw new ReglaNegocioException("Cupo lleno: maximo " + cupoMaximo + " jugadores");
+        }
+        jugadores.add(jugador);
     }
 
     public boolean estaInscrito(Jugador jugador) {

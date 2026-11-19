@@ -1,32 +1,55 @@
 package ec.intesud.arena.domain;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ec.intesud.arena.exception.ReglaNegocioException;
 import org.junit.jupiter.api.Test;
 
 /**
- * TODO 16 (JUnit): escribe estas pruebas SIN Spring ni base de datos (mira RankingTest como ejemplo).
- * Usa assertEquals / assertThrows. Cada test debe fallar si la regla no existe.
+ * Pruebas unitarias de las reglas de inscripcion del Torneo, sin Spring ni base de datos.
+ * Patron AAA: Arrange (preparar), Act (ejecutar), Assert (verificar).
  */
 class TorneoTest {
 
     @Test
     void inscribeJugadoresHastaElCupo() {
-        fail("TODO: crea un Torneo con cupo 2, inscribe 2 jugadores y verifica getJugadores().size()");
+        Torneo torneo = new Torneo("Copa", Modalidad.CLASICA, 2);
+
+        torneo.inscribir(new Jugador("ana", "Rojos"));
+        torneo.inscribir(new Jugador("beto", "Azules"));
+
+        assertEquals(2, torneo.getJugadores().size());
     }
 
     @Test
     void rechazaCuandoElCupoEstaLleno() {
-        fail("TODO: cupo 1, inscribe 2 jugadores -> ReglaNegocioException con 'Cupo lleno'");
+        Torneo torneo = new Torneo("Copa", Modalidad.CLASICA, 1);
+        torneo.inscribir(new Jugador("ana", "Rojos"));
+
+        ReglaNegocioException e = assertThrows(ReglaNegocioException.class,
+                () -> torneo.inscribir(new Jugador("beto", "Azules")));
+
+        assertTrue(e.getMessage().contains("Cupo lleno"));
+        assertEquals(1, torneo.getJugadores().size());
     }
 
     @Test
     void rechazaJugadorRepetidoSinImportarMayusculas() {
-        fail("TODO: inscribe 'ana' y luego 'ANA' -> ReglaNegocioException");
+        Torneo torneo = new Torneo("Copa", Modalidad.CLASICA, 5);
+        torneo.inscribir(new Jugador("ana", "Rojos"));
+
+        assertThrows(ReglaNegocioException.class, () -> torneo.inscribir(new Jugador("ANA", "Rojos")));
+        assertEquals(1, torneo.getJugadores().size());
     }
 
     @Test
     void rechazaInscripcionesEnTorneoFinalizado() {
-        fail("TODO: llama a finalizar() y luego inscribe -> ReglaNegocioException");
+        Torneo torneo = new Torneo("Copa", Modalidad.CLASICA, 5);
+        torneo.finalizar();
+
+        assertThrows(ReglaNegocioException.class, () -> torneo.inscribir(new Jugador("ana", "Rojos")));
+        assertTrue(torneo.getJugadores().isEmpty());
     }
 }

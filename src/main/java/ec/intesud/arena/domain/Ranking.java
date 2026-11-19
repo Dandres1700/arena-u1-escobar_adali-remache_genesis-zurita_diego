@@ -1,6 +1,7 @@
 package ec.intesud.arena.domain;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /** Utilidades de ranking. */
@@ -10,13 +11,16 @@ public final class Ranking {
     }
 
     /**
-     * TODO 3 (genericos): devuelve los mejores "n" elementos, de mayor a menor puntaje.
-     *  - Si hay empate en puntos, ordena por nombre (sin distinguir mayusculas/minusculas).
-     *  - Debe funcionar IGUAL para JugadorPuntaje, Equipo o cualquier Puntuable.
-     *  - No cambies la firma: <T extends Puntuable> ¿por que se necesita esa cota?
-     * Pista: Comparator.comparingInt(...).reversed().thenComparing(...) y limit(n).
+     * Devuelve los mejores "n" elementos, de mayor a menor puntaje; en empate, por nombre
+     * sin distinguir mayusculas. La cota {@code <T extends Puntuable>} garantiza que T tiene
+     * getPuntos() y getNombre(), y a la vez conserva el tipo concreto en la lista devuelta.
      */
     public static <T extends Puntuable> List<T> top(Collection<T> elementos, int n) {
-        throw new UnsupportedOperationException("TODO 3: Ranking.top()");
+        Comparator<T> porPuntosDesc = Comparator.comparingInt((T e) -> e.getPuntos()).reversed();
+        Comparator<T> porNombre = Comparator.comparing(Puntuable::getNombre, String.CASE_INSENSITIVE_ORDER);
+        return elementos.stream()
+                .sorted(porPuntosDesc.thenComparing(porNombre))
+                .limit(Math.max(0, n))
+                .toList();
     }
 }

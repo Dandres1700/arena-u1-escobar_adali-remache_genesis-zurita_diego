@@ -6,10 +6,12 @@ package ec.intesud.arena.domain;
 public record EstadisticasPartida(int kills, int muertes, int segundos) {
 
     public EstadisticasPartida {
-        // TODO 4 (excepciones): valida los datos y lanza IllegalArgumentException con un
-        // mensaje claro cuando:
-        //   - kills o muertes sean negativos
-        //   - segundos sea 0 o negativo
-        // Asi sera imposible crear estadisticas invalidas.
+        // Validacion en el constructor compacto: es imposible crear estadisticas invalidas.
+        if (kills < 0 || muertes < 0) {
+            throw new IllegalArgumentException("Las kills y las muertes no pueden ser negativas");
+        }
+        if (segundos <= 0) {
+            throw new IllegalArgumentException("La duracion de la partida debe ser mayor a 0 segundos");
+        }
     }
 }
