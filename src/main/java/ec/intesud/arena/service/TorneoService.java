@@ -126,14 +126,14 @@ public class TorneoService {
     }
 
     /** Ranking por equipos: agrupa jugadores en Equipos (composicion) y los rankea igual. */
-    /**
-     * TODO 15 (composicion + genericos): ranking por equipos.
-     * Agrupa los JugadorPuntaje de puntajesPorJugador(torneoId) por equipo, crea un objeto Equipo
-     * por cada grupo y reutiliza Ranking.top(...) y aItems(...). Pista: Collectors.groupingBy.
-     */
     @Transactional(readOnly = true)
     public List<RankingItem> rankingEquipos(Long torneoId, int top) {
-        throw new UnsupportedOperationException("TODO 15: TorneoService.rankingEquipos()");
+        Map<String, List<JugadorPuntaje>> porEquipo = puntajesPorJugador(torneoId).stream()
+                .collect(Collectors.groupingBy(JugadorPuntaje::getEquipo, LinkedHashMap::new, Collectors.toList()));
+        List<Equipo> equipos = porEquipo.entrySet().stream()
+                .map(e -> new Equipo(e.getKey(), e.getValue()))
+                .toList();
+        return aItems(Ranking.top(equipos, top)); // el mismo metodo generico que con jugadores
     }
 
     // ---------- metodos privados de apoyo ----------
