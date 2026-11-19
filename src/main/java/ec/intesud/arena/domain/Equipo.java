@@ -28,9 +28,7 @@ public class Equipo extends Participante {
 
     @Override
     public String describir() {
-        // TODO 2 (polimorfismo): reutiliza describir() de la clase padre y agrega el detalle
-        // del equipo. Debe quedar asi:  "Equipo Rojos (70 pts) con 2 jugadores"
-        // Pista: ¿que palabra clave te permite llamar al metodo del padre?
-        throw new UnsupportedOperationException("TODO 2: Equipo.describir()");
+        // Polimorfismo: reutilizamos la descripcion del padre con super y la ampliamos.
+        return "Equipo " + super.describir() + " con " + integrantes.size() + " jugadores";
     }
 }
