@@ -126,26 +126,29 @@ public class TorneoService {
     }
 
     /** Ranking por equipos: agrupa jugadores en Equipos (composicion) y los rankea igual. */
-    /**
-     * TODO 15 (composicion + genericos): ranking por equipos.
-     * Agrupa los JugadorPuntaje de puntajesPorJugador(torneoId) por equipo, crea un objeto Equipo
-     * por cada grupo y reutiliza Ranking.top(...) y aItems(...). Pista: Collectors.groupingBy.
-     */
     @Transactional(readOnly = true)
     public List<RankingItem> rankingEquipos(Long torneoId, int top) {
-        throw new UnsupportedOperationException("TODO 15: TorneoService.rankingEquipos()");
+        Map<String, List<JugadorPuntaje>> porEquipo = puntajesPorJugador(torneoId).stream()
+                .collect(Collectors.groupingBy(JugadorPuntaje::getEquipo, LinkedHashMap::new, Collectors.toList()));
+        List<Equipo> equipos = porEquipo.entrySet().stream()
+                .map(e -> new Equipo(e.getKey(), e.getValue()))
+                .toList();
+        return aItems(Ranking.top(equipos, top)); // el mismo metodo generico que con jugadores
     }
 
     // ---------- metodos privados de apoyo ----------
 
     private PartidaResponse guardarPartida(Torneo torneo, Jugador jugador, EstadisticasPartida stats) {
-        // TODO 14 (service + Strategy): 
-        //   1. si el torneo esta FINALIZADO -> ReglaNegocioException
-        //   2. si el jugador NO esta inscrito -> ReglaNegocioException (mensaje con el nick)
-        //   3. calcula los puntos con "calculadora" segun la modalidad del torneo
-        //   4. guarda una Partida con partidaRepository y devuelve PartidaResponse(id, nick, puntos)
-        // Pregunta: ¿por que este metodo NO debe tener un switch con las modalidades?
-        throw new UnsupportedOperationException("TODO 14: TorneoService.guardarPartida()");
+        if (torneo.getEstado() == EstadoTorneo.FINALIZADO) {
+            throw new ReglaNegocioException("El torneo '" + torneo.getNombre() + "' ya esta finalizado");
+        }
+        if (!torneo.estaInscrito(jugador)) {
+            throw new ReglaNegocioException("El jugador '" + jugador.getNick() + "' no esta inscrito en el torneo");
+        }
+        // STRATEGY: la calculadora elige la regla segun la modalidad; aqui no hay switch.
+        int puntos = calculadora.calcular(torneo.getModalidad(), stats);
+        partidaRepository.save(new Partida(torneo, jugador, stats, puntos));
+        return new PartidaResponse(jugador.getId(), jugador.getNick(), puntos);
     }
 
     /** Suma los puntos de cada jugador inscrito (los que no jugaron aparecen con 0). */

@@ -12,18 +12,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class JugadorService {
 
-    private JugadorRepository jugadorRepository; // TODO 12: hazlo final cuando completes el constructor
+    private final JugadorRepository jugadorRepository;
 
-    // TODO 12 (inyeccion de dependencias): asigna el repositorio recibido. Luego vuelve el campo final.
-    // Pregunta: ¿por que la inyeccion por constructor es mejor que usar @Autowired en el campo?
+    // Inyeccion por constructor: Spring entrega el repositorio y el campo final no puede cambiar.
     public JugadorService(JugadorRepository jugadorRepository) {
+        this.jugadorRepository = jugadorRepository;
     }
 
     public JugadorResponse crear(JugadorRequest request) {
-        // TODO 13 (capa service): si ya existe un jugador con ese nick (sin importar mayusculas)
-        // lanza ReglaNegocioException("El nick '<nick>' ya esta en uso"); si no, guardalo
-        // y devuelve su JugadorResponse (ver JugadorResponse.desde).
-        throw new UnsupportedOperationException("TODO 13: JugadorService.crear()");
+        String nick = request.nick().trim();
+        if (jugadorRepository.existsByNickIgnoreCase(nick)) {
+            throw new ReglaNegocioException("El nick '" + nick + "' ya esta en uso");
+        }
+        Jugador guardado = jugadorRepository.save(new Jugador(nick, request.equipo()));
+        return JugadorResponse.desde(guardado);
     }
 
     public List<JugadorResponse> listar() {
