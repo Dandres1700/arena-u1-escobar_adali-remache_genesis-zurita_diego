@@ -13,14 +13,11 @@ public class SupervivenciaStrategy implements PuntuacionStrategy {
 
     @Override
     public Modalidad modalidad() {
-        // TODO 6a: ¿a que modalidad pertenece esta estrategia?
-        throw new UnsupportedOperationException("TODO 6a");
+        return Modalidad.SUPERVIVENCIA;
     }
 
     @Override
     public int calcular(EstadisticasPartida stats) {
-        // TODO 6b: aplica la formula del enunciado. Cuidado con la division entera
-        // (299 segundos -> 29 puntos) y con que el resultado nunca baje de 0.
-        throw new UnsupportedOperationException("TODO 6b");
+        return Math.max(0, stats.segundos() / 10 + stats.kills() * 2 - stats.muertes() * 5);
     }
 }
